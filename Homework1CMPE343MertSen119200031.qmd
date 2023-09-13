@@ -1,0 +1,67 @@
+---
+title: "Homework1"
+author: "Mert ŞEN"
+format: pdf
+editor: visual
+---
+
+## Boston Housing
+
+I chosed the "Boston Housing" dataset for my homework. It is available on MASS package. Attributes and explanations of Boston Housing dataset are in the below:
+
+```{r}
+library(MASS)
+help("Boston")
+```
+
+Lets take a 80% of sampling of our dataset and observe. We have 506 samples and 80% of this is equals 408 samples.
+
+```{r}
+trainingDataIndex<-sample(1:nrow(Boston),408)
+traingingData<-Boston[trainingDataIndex,]#it 408 row and all columns
+testDataIndex<-setdiff(1:nrow(Boston),trainingDataIndex)#we are going to use this when we are maing a prediction
+testData<-Boston[testDataIndex,]
+
+```
+
+Let's produce three different fitted models and compare which model is best for predicting Boston housing prices.
+
+For this example, we will call it Fitted Model 1. We will use all the attributes (columns) and check if they have an effect on the median value of owner-occupied homes, which is a measure of the housing market value in Boston
+
+```{r}
+
+
+fittedModel1<-lm(medv ~ ., data = traingingData )
+summary(fittedModel1)
+```
+
+For this example, let's call it Fitted model 2. Now we are going to use the age of the building, proportion of residential area, and crime rate to observe if they have an effect on
+
+```{r}
+fittedModel2<-lm(medv~age+zn+crim, data = traingingData)
+summary(fittedModel2)
+```
+
+For this example, let's call it Fitted model 3. We are going to use nitrogen oxide concentration, accessibility to radial highways, and pupil-teacher ratio to observe if they have an effect on
+
+```{r}
+fittedModel3<-lm(medv~ptratio+nox+rad+dis,data = traingingData)
+summary(fittedModel3)
+```
+
+When we observe all three Fitted models, Fitted model 1 is the most effective one among them. This is because it has a higher Adjusted R-squared value of 0.5328 and all of its coefficients are statistically significant with a code of 3 "\*" which means we can be 100% sure that these properties have a major effect on the housing market value in Boston. After Fitted model 1, Fitted model 3 follows it, and Fitted model 2 is the least effective Fitted model.
+
+Now, let's check our predictions and see how much they deviated from the values in our test dataset. Since it can be difficult to interpret only the predicted numbers, we can use the "accuracy()" function to determine the error percentage.
+
+```{r}
+fittedModel1Predict<-predict(fittedModel1,newdata = testData)
+fittedModel2Predict<-predict(fittedModel2,newdata = testData)
+fittedModel3Predict<-predict(fittedModel3,newdata = testData)
+library(forecast)
+accuracy(fittedModel1Predict,testData$medv)
+accuracy(fittedModel2Predict,testData$medv)
+accuracy(fittedModel3Predict,testData$medv)
+```
+
+\
+To determine the prediction accuracy, we can use the MAPE (Mean Absolute Percentage Error) metric. Upon calculation, we can see that Fitted model 1 has the most acceptable error rate of 17%, while Fitted model 2 and Fitted model 3 have error rates of 29% and 27%, respectively. Therefore, we can conclude that Fitted model 1 is the most suitable model for our prediction modelling.
